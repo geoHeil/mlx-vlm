@@ -41,7 +41,9 @@ class Model(nn.Module):
             embeddings = self.get_input_embeddings(
                 input_ids, pixel_values, **kwargs
             ).inputs_embeds
-            return self.language_model(inputs_embeds=embeddings, cache=cache)
+            return self.language_model(
+                inputs_embeds=embeddings, cache=cache, logits_to_keep=input_ids.shape[1]
+            )
         return self.language_model(input_ids, cache=cache)
 
     @staticmethod

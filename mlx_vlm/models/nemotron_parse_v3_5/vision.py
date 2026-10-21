@@ -74,7 +74,7 @@ class VisionModel(RadioVisionModel):
             raise ValueError("Invalid packed page geometry")
         if pixel_values.shape != ((height // 16) * (width // 16), 768):
             raise ValueError("Packed patches do not match image_sizes")
-        x = self.patch_embed(pixel_values)[None]
+        x = self.patch_embed(pixel_values.astype(self.patch_embed.weight.dtype))[None]
         x = x + self._positions(height // 16, width // 16, ch, cw, x.dtype)
         x = mx.concatenate([self.cls_token[None], x], axis=1)
         for block in self.blocks:

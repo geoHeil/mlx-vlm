@@ -76,7 +76,9 @@ class LanguageModel(nn.Module):
     def embed(self, ids):
         return self.embed_tokens(ids) * self.embed_scale
 
-    def __call__(self, inputs=None, inputs_embeds=None, cache=None, **kwargs):
+    def __call__(
+        self, inputs=None, inputs_embeds=None, cache=None, logits_to_keep=None, **kwargs
+    ):
         x = self.embed(inputs) if inputs_embeds is None else inputs_embeds
         past = cache[0].offset if cache else 0
         if past + x.shape[1] > self.max_sequence_length:
@@ -87,6 +89,8 @@ class LanguageModel(nn.Module):
         for layer, c in zip(self.layers, cache or [None] * len(self.layers)):
             x = layer(x, mask, c)
         x = self.layer_norm(x)
+        if logits_to_keep is not None:
+            x = x[:, -logits_to_keep:]
         return LanguageModelOutput(logits=self.embed_tokens.as_linear(x))
 
     def make_cache(self):
