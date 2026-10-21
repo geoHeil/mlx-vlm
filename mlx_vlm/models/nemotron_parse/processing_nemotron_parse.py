@@ -155,9 +155,19 @@ class NemotronParseProcessor:
         import json
         from pathlib import Path
 
+        from huggingface_hub import hf_hub_download
         from transformers import AutoTokenizer
 
         config_path = Path(pretrained_model_name_or_path) / "config.json"
+        if not config_path.is_file():
+            config_path = Path(
+                hf_hub_download(
+                    pretrained_model_name_or_path,
+                    "config.json",
+                    revision=kwargs.get("revision"),
+                    token=kwargs.get("token"),
+                )
+            )
         if config_path.is_file():
             config = json.loads(config_path.read_text(encoding="utf-8"))
             if "RadioMBartPrefixForCausalLM" in config.get("architectures", []):

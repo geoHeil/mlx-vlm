@@ -5,8 +5,8 @@ First publish the converted models, then pass their immutable revisions:
     --output evidence --images page1.png page2.png \
     --model user/model-bf16@COMMIT --model user/model-8bit@COMMIT
 
-Reference weights stay float32 (their stored dtype); converted models use their
-published dtype. The report distinguishes numerical drift, geometry, and text.
+The reference dtype/device are explicit; the source file stores float32 weights.
+Converted models use their published dtype. The report distinguishes numerical drift, geometry, and text.
 """
 
 import argparse
@@ -159,6 +159,7 @@ def main():
                         "tokens": ids.tolist(),
                         "seconds": time.monotonic() - started,
                         "ended_with_eos": ids[-1].item() == 2,
+                        "reached_token_limit": len(ids) >= args.max_tokens,
                         "structure": structure(text),
                     },
                 }
