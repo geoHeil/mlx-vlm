@@ -152,7 +152,22 @@ class NemotronParseProcessor:
 
     @classmethod
     def from_pretrained(cls, pretrained_model_name_or_path, **kwargs):
+        import json
+        from pathlib import Path
+
         from transformers import AutoTokenizer
+
+        config_path = Path(pretrained_model_name_or_path) / "config.json"
+        if config_path.is_file():
+            config = json.loads(config_path.read_text(encoding="utf-8"))
+            if "RadioMBartPrefixForCausalLM" in config.get("architectures", []):
+                from ..nemotron_parse_v3_5.processing_nemotron_parse_v3_5 import (
+                    Processor,
+                )
+
+                return Processor.from_pretrained(
+                    pretrained_model_name_or_path, **kwargs
+                )
 
         trust_remote_code = kwargs.get("trust_remote_code", None)
         revision = kwargs.get("revision", None)
