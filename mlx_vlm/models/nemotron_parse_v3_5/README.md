@@ -15,7 +15,8 @@ mlx_vlm.convert --hf-path nvidia/Nemotron-3.5-Parse \
   --mlx-path Nemotron-3.5-Parse-bf16 --dtype bfloat16
 mlx_vlm.generate --model Nemotron-3.5-Parse-bf16 --image page.png \
   --prompt '</s><s><predict_bbox><predict_classes><output_markdown><predict_text_in_pic>' \
-  --temperature 0 --max-tokens 8744
+  --temperature 0 --max-tokens 8744 \
+  --repetition-penalty 1.1 --repetition-context-size 0
 ```
 
 Use `--quantize --q-bits 8` or `--quantize --q-bits 4` to quantize the language
